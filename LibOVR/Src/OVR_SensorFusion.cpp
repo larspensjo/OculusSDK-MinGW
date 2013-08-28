@@ -548,7 +548,7 @@ bool SensorFusion::LoadMagCalibration(const char* calibrationName)
                                     tm ct;
                                     memset(&ct, 0, sizeof(tm));
                             
-#ifdef OVR_OS_WIN32
+#ifdef OVR_MSVC_SAFESTRING
                                     struct tm nowtime;
                                     localtime_s(&nowtime, &now);
                                     ct.tm_isdst = nowtime.tm_isdst;

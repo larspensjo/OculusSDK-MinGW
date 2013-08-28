@@ -29,6 +29,11 @@
 #
 #############################################################################
 
+####### Target platform
+
+PLATFORM ?= Linux
+#PLATFORM ?= MinGW
+
 ####### Detect system architecture
 
 SYSARCH       = i386
@@ -36,21 +41,35 @@ ifeq ($(shell uname -m),x86_64)
 SYSARCH       = x86_64
 endif
 
+ifeq ($(PLATFORM),MinGW)
+SYSARCH       = w32
+endif
+
 ####### Compiler, tools and options
 
-CXX           = g++
-LINK          = ar rvs
+CXX          ?= g++
+AR           ?= ar
+
+LINK          = $(AR) rvs
 DELETEFILE    = rm -f
 
 ####### Detect debug or release
 
 DEBUG         = 0
 ifeq ($(DEBUG), 1)
-	CXXFLAGS      = -pipe -fPIC -DDEBUG -g
+	CXXFLAGS      = -pipe -DDEBUG -g
 	RELEASETYPE   = Debug
 else
-	CXXFLAGS      = -pipe -fPIC -O2
+	CXXFLAGS      = -pipe -O2
 	RELEASETYPE   = Release
+endif
+
+ifeq ($(PLATFORM),Linux)
+	CXXFLAGS     += -fPIC
+endif
+
+ifeq ($(PLATFORM),MinGW)
+	CXXFLAGS     += -DUNICODE -D_UNICODE -municode
 endif
 
 ####### Paths
@@ -58,12 +77,12 @@ endif
 LIBOVRPATH    = .
 3RDPARTYPATH  = ../3rdParty
 INCPATH       = -I. -I.. -I$(LIBOVRPATH)/Include -I$(LIBOVRPATH)/Src
-OBJPATH       = ./Obj/Linux/$(RELEASETYPE)/$(SYSARCH)
+OBJPATH       = ./Obj/$(PLATFORM)/$(RELEASETYPE)/$(SYSARCH)
 CXXBUILD      = $(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJPATH)/
 
 ####### Files
 
-TARGET        = ./Lib/Linux/$(RELEASETYPE)/$(SYSARCH)/libovr.a
+TARGET        = ./Lib/$(PLATFORM)/$(RELEASETYPE)/$(SYSARCH)/libovr.a
 
 OBJECTS       = $(OBJPATH)/OVR_DeviceHandle.o \
 		$(OBJPATH)/OVR_DeviceImpl.o \
@@ -92,13 +111,25 @@ OBJECTS       = $(OBJPATH)/OVR_DeviceHandle.o \
 		$(OBJPATH)/OVR_UTF8Util.o \
 		$(OBJPATH)/Util_LatencyTest.o \
 		$(OBJPATH)/Util_MagCalibration.o \
-		$(OBJPATH)/Util_Render_Stereo.o \
-		$(OBJPATH)/OVR_ThreadsPthread.o \
+		$(OBJPATH)/Util_Render_Stereo.o
+
+ifeq ($(PLATFORM),Linux)
+OBJECTS      += $(OBJPATH)/OVR_ThreadsPthread.o \
 		$(OBJPATH)/OVR_Linux_HIDDevice.o \
 		$(OBJPATH)/OVR_Linux_SensorDevice.o \
 		$(OBJPATH)/OVR_Linux_DeviceManager.o \
 		$(OBJPATH)/OVR_Linux_HMDDevice.o \
 		$(OBJPATH)/tinyxml2.o
+endif
+
+ifeq ($(PLATFORM),MinGW)
+OBJECTS      += $(OBJPATH)/OVR_ThreadsWinAPI.o \
+		$(OBJPATH)/OVR_Win32_HIDDevice.o \
+		$(OBJPATH)/OVR_Win32_SensorDevice.o \
+		$(OBJPATH)/OVR_Win32_DeviceManager.o \
+		$(OBJPATH)/OVR_Win32_DeviceStatus.o \
+		$(OBJPATH)/OVR_Win32_HMDDevice.o
+endif
 
 ####### Rules
 
@@ -208,6 +239,25 @@ $(OBJPATH)/OVR_Linux_HMDDevice.o: $(LIBOVRPATH)/Src/OVR_Linux_HMDDevice.cpp
 
 $(OBJPATH)/tinyxml2.o: $(3RDPARTYPATH)/TinyXml/tinyxml2.cpp 
 	$(CXXBUILD)tinyxml2.o $(3RDPARTYPATH)/TinyXml/tinyxml2.cpp
+
+$(OBJPATH)/OVR_ThreadsWinAPI.o: $(LIBOVRPATH)/Src/Kernel/OVR_ThreadsWinAPI.cpp
+	$(CXXBUILD)OVR_ThreadsWinAPI.o $(LIBOVRPATH)/Src/Kernel/OVR_ThreadsWinAPI.cpp
+
+$(OBJPATH)/OVR_Win32_HIDDevice.o: $(LIBOVRPATH)/Src/OVR_Win32_HIDDevice.cpp
+	$(CXXBUILD)OVR_Win32_HIDDevice.o $(LIBOVRPATH)/Src/OVR_Win32_HIDDevice.cpp
+
+$(OBJPATH)/OVR_Win32_SensorDevice.o: $(LIBOVRPATH)/Src/OVR_Win32_SensorDevice.cpp
+	$(CXXBUILD)OVR_Win32_SensorDevice.o $(LIBOVRPATH)/Src/OVR_Win32_SensorDevice.cpp
+
+$(OBJPATH)/OVR_Win32_DeviceManager.o: $(LIBOVRPATH)/Src/OVR_Win32_DeviceManager.cpp
+	$(CXXBUILD)OVR_Win32_DeviceManager.o $(LIBOVRPATH)/Src/OVR_Win32_DeviceManager.cpp
+
+$(OBJPATH)/OVR_Win32_DeviceStatus.o: $(LIBOVRPATH)/Src/OVR_Win32_DeviceStatus.cpp
+	$(CXXBUILD)OVR_Win32_DeviceStatus.o $(LIBOVRPATH)/Src/OVR_Win32_DeviceStatus.cpp
+
+$(OBJPATH)/OVR_Win32_HMDDevice.o: $(LIBOVRPATH)/Src/OVR_Win32_HMDDevice.cpp
+	$(CXXBUILD)OVR_Win32_HMDDevice.o $(LIBOVRPATH)/Src/OVR_Win32_HMDDevice.cpp
+
 
 clean:
 	-$(DELETEFILE) $(OBJECTS)

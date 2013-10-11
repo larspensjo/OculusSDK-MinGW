@@ -958,8 +958,6 @@ void Thread::SetThreadName( const char* name )
     info.dwThreadID = reinterpret_cast<DWORD>(GetThreadId());
     info.dwFlags = 0;
 
-    // MinGW does not support SEH exceptions.
-#ifndef __MINGW32__
     __try
     {
 #ifdef _WIN64
@@ -971,8 +969,6 @@ void Thread::SetThreadName( const char* name )
     __except( GetExceptionCode()==0x406D1388 ? EXCEPTION_CONTINUE_EXECUTION : EXCEPTION_EXECUTE_HANDLER )
     {
     }
-#endif // __MINGW32__
-
 #endif // OVR_BUILD_SHIPPING
 }
 

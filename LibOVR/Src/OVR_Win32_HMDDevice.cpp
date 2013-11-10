@@ -163,18 +163,18 @@ bool HMDDeviceCreateDesc::MatchDevice(const String& path)
 const wchar_t* FormatDisplayStateFlags(wchar_t* buff, int length, DWORD flags)
 {
     buff[0] = 0;
-    if (flags & DISPLAY_DEVICE_ACTIVE)
-        wcscat_s(buff, length, L"Active ");
+    if (flags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
+        wcscat(buff, L"Active ");
     if (flags & DISPLAY_DEVICE_MIRRORING_DRIVER)
-        wcscat_s(buff, length, L"Mirroring_Driver ");
+        wcscat(buff, L"Mirroring_Driver ");
     if (flags & DISPLAY_DEVICE_MODESPRUNED)
-        wcscat_s(buff, length, L"ModesPruned ");
+        wcscat(buff, L"ModesPruned ");
     if (flags & DISPLAY_DEVICE_PRIMARY_DEVICE)
-        wcscat_s(buff, length, L"Primary ");
+        wcscat(buff, L"Primary ");
     if (flags & DISPLAY_DEVICE_REMOVABLE)
-        wcscat_s(buff, length, L"Removable ");
+        wcscat(buff, L"Removable ");
     if (flags & DISPLAY_DEVICE_VGA_COMPATIBLE)
-        wcscat_s(buff, length, L"VGA_Compatible ");
+        wcscat(buff, L"VGA_Compatible ");
     return buff;
 }
 

@@ -20,6 +20,7 @@ otherwise accompanies this software in either electronic or hard copy form.
 #include "OVR_Win32_DeviceManager.h"
 
 #include <windows.h>
+#include <ntdef.h> // Needed for declaration of NTSTATUS
 #include <setupapi.h>
 
 //-------------------------------------------------------------------------------------

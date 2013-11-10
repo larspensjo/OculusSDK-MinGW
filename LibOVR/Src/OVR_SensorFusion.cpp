@@ -349,7 +349,7 @@ bool SensorFusion::SaveMagCalibration(const char* calibrationName) const
     // time stamp the calibration
     char time_str[64];
    
-#ifdef OVR_OS_WIN32
+#if defined(OVR_OS_WIN32) && !defined(__GNUC__)
     struct tm caltime;
     localtime_s(&caltime, &MagCalibrationTime);
     strftime(time_str, 64, "%Y-%m-%d %H:%M:%S", &caltime);

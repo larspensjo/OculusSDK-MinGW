@@ -17,6 +17,7 @@
 #                                   architechture
 #               make clean DEBUG=1  deletes intermediate debug object files 
 #                                   and the library file
+#               make PLATFORM=MinGW builds for the MinGW platform, 32-bit architecture
 #
 # Output      : Relative to the directory this Makefile lives in, libraries
 #               are built at the following locations depending upon the
@@ -69,7 +70,11 @@ ifeq ($(PLATFORM),Linux)
 endif
 
 ifeq ($(PLATFORM),MinGW)
-	CXXFLAGS     += -DUNICODE -D_UNICODE -municode
+	CXXFLAGS     += -DUNICODE -D_UNICODE
+endif
+
+ifeq ($(PLATFORM),MinGW64)
+	CXXFLAGS     += -municode
 endif
 
 ####### Paths
